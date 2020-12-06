@@ -1,0 +1,20 @@
+<div class="form-group">
+  <input
+    [class.is-invalid]="ngControl.touched && ngControl.invalid"
+    type="{{type}}"
+    class="form-control"
+    [formControl]="ngControl.control"
+    placeholder="{{label}}"/>
+  <div *ngIf="ngControl.control.errors?.required" class="invalid-feedback">
+    Geçerli {{label}} giriniz.
+  </div>
+  <div *ngIf="ngControl.control.errors?.minLength" class="invalid-feedback">
+    En az {{ngControl.control.errors.minLength['requiredLength']}} karakter giriniz.
+  </div>
+  <div *ngIf="ngControl.control.errors?.maxLength" class="invalid-feedback">
+    En fazla {{ngControl.control.errors.maxLength['requiredLength']}} karakter giriniz.
+  </div>
+  <div *ngIf="ngControl.control.errors?.isMatching" class="invalid-feedback">
+    Şifreler eşleşmiyor.
+  </div>
+</div>

@@ -1,26 +1,37 @@
-<form #registerForm="ngForm" (ngSubmit)="register()" autocomplete="off">
+<form [formGroup]="registerForm" (ngSubmit)="registerForm.valid && register()" autocomplete="off">
   <h2 class="text-center text-primary">Sign Up</h2>
-  <hr />
-  <div class="form-group">
-    <input type="text" class="form-control" name="username"
-           [(ngModel)]="model.username" placeholder="Kullanıcı Adı" />
-  </div>
+  <hr/>
 
   <div class="form-group">
-    <label>Favori kullanıcın kim?</label>
-    <select class="form-control">
-      <option *ngFor="let user of usersFromHomeComponent" [value]="user.userName">
-        {{user.userName}}
-      </option>
-    </select>
+    <label class="control-label" style="margin-right: 10px;">Ben: </label>
+    <label class="radio-imline">
+      <input type="radio" value="erkek" formControlName="gender"/> Erkek
+    </label>
+    <label class="radio-imline">
+      <input type="radio" value="kadin" formControlName="gender" class="ml-3"/> Kadın
+    </label>
   </div>
 
-  <div class="form-group">
-    <input type="password" class="form-control" name="password"
-           [(ngModel)]="model.password" placeholder="Şifre" />
+  <app-text-input [formControl]="registerForm.controls['username']" [label]="'Kullanıcı Adı'"></app-text-input>
+  <app-text-input [formControl]="registerForm.controls['knownAs']" [label]="'Known As'"></app-text-input>
+  <app-date-input [formControl]="registerForm.controls['dateOfBirth']" [label]="'Doğum Tarihi'" [maxDate]="maxDate"></app-date-input>
+  <app-text-input [formControl]="registerForm.controls['city']" [label]="'Şehir'"></app-text-input>
+  <app-text-input [formControl]="registerForm.controls['country']" [label]="'Ülke'"></app-text-input>
+  <app-text-input [formControl]="registerForm.controls['password']" [label]="'Şifre'"
+                  [type]="'password'"></app-text-input>
+  <app-text-input [formControl]="registerForm.controls['confirmPassword']" [label]="'Şifre Tekrarı'"
+                  [type]="'password'"></app-text-input>
+
+  <div class="row" *ngIf="validationErrors.length > 0">
+    <ul class="text-danger">
+      <li *ngFor="let error of validationErrors">
+        {{error}}
+      </li>
+    </ul>
   </div>
+
   <div class="form-group text-center">
-    <button class="btn btn-success mr-2" type="submit">Kaydol</button>
+    <button [disabled]="!registerForm.value" class="btn btn-success mr-2" type="submit">Kaydol</button>
     <button class="btn btn-default mr-2" type="button" (click)="cancel()">İptal</button>
   </div>
 </form>

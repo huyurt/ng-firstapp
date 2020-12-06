@@ -7,6 +7,7 @@ using API.Data;
 using API.Dtos;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,35 +16,42 @@ namespace API.Controllers
 {
     public class AccountController : BaseApiController
     {
+        private readonly IMapper _mapper;
         private readonly ITokenService _tokenService;
         private readonly DataContext _context;
 
-        public AccountController(ITokenService tokenservice, DataContext context)
+        public AccountController(IMapper mapper, ITokenService tokenservice, DataContext context)
         {
+            _mapper = mapper;
             _tokenService = tokenservice;
             _context = context;
         }
 
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<ActionResult<AppUser>> Register(RegisterDto registerDto)
+        public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
         {
             if (await UserExists(registerDto.Username))
                 return BadRequest("Kullanıcı adı başkası tarafından kullanılıyor.");
 
+            var user = _mapper.Map<AppUser>(registerDto);
+
             using var hmac = new HMACSHA512();
 
-            var user = new AppUser
-            {
-                UserName = registerDto.Username.ToLower(),
-                PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password)),
-                PasswordSalt = hmac.Key,
-            };
+            user.UserName = registerDto.Username.ToLower();
+            user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDto.Password));
+            user.PasswordSalt = hmac.Key;
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return user;
+            return new UserDto
+            {
+                Username = user.UserName,
+                Token = _tokenService.CreateToken(user),
+                PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
+                KnownAs = user.KnownAs,
+            };
         }
 
         [HttpPost("login")]
