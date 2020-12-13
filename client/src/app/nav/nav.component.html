@@ -12,12 +12,15 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/messages" routerLinkActive="active">Mesajlar</a>
         </li>
+        <li *appHasRole="['Admin', 'Moderator']" class="nav-item">
+          <a class="nav-link" routerLink="/admin" routerLinkActive="active">Yönetim</a>
+        </li>
       </ng-container>
     </ul>
 
     <div class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" dropdown>
       <img src="{{user.photoUrl || './assets/user.png'}}" alt="{{user.username}}" />
-      <a class="dropdown-toggle text-light ml-2" dropdownToggle>{{user.knownAs | titlecase}} hoşgeldin</a>
+      <a class="dropdown-toggle text-light ml-2" dropdownToggle>{{user.knownAs || user.username | titlecase}} hoşgeldin</a>
       <div class="dropdown-menu nt-3" *dropdownMenu>
         <a routerLink='/member/edit' class="dropdown-item">Profil</a>
         <div class="dropdown-divider"></div>

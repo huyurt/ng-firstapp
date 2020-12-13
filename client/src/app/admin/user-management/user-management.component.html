@@ -1,0 +1,16 @@
+<div class="row">
+  <table class="table">
+    <tr>
+      <th style="width: 30%">Kullanıcı Adı</th>
+      <th style="width: 40%">Aktif Roller</th>
+      <th style="width: 30%"></th>
+    </tr>
+    <tr *ngFor="let user of users">
+      <td>{{user.username}}</td>
+      <td>{{user.roles}}</td>
+      <td>
+        <button (click)="openRolesModal(user)" class="btn btn-info">Rolleri Düzenle</button>
+      </td>
+    </tr>
+  </table>
+</div>
