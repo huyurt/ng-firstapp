@@ -46,7 +46,7 @@ namespace API.SignalR
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             var group = await RemoveFromMessageGroup();
-            await Clients.Group(group.Name).SendAsync("UpdateGroup", group);
+            await Clients.Group(group.Name).SendAsync("UpdatedGroup", group);
             await base.OnDisconnectedAsync(exception);
         }
 
