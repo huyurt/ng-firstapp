@@ -15,20 +15,20 @@ namespace API.Controllers
     [Authorize]
     public class LikesController : BaseApiController
     {
-        private readonly IUserRepository _userRepository;
         private readonly ILikedRepository _likedRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LikesController(IUserRepository userRepository, ILikedRepository likedRepository)
+        public LikesController(ILikedRepository likedRepository, IUnitOfWork unitOfWork)
         {
-            _userRepository = userRepository;
             _likedRepository = likedRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpPost("{username}")]
         public async Task<ActionResult> AddLike(string username)
         {
             var sourceUserId = User.GetUserId();
-            var likedUser = await _userRepository.GetUserByUsernameAsync(username);
+            var likedUser = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
             var sourceUser = await _likedRepository.GetUserWithLikes(sourceUserId);
 
             if (likedUser == null)
@@ -47,7 +47,7 @@ namespace API.Controllers
 
             sourceUser.LikedUsers.Add(userLike);
 
-            if (await _userRepository.SaveAllAsync())
+            if (await _unitOfWork.Complete())
                 return Ok();
 
             return BadRequest("Hata oluştu");
